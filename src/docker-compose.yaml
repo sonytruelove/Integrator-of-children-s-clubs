@@ -1,0 +1,26 @@
+services:
+  mongo:
+    image: mongo:6.0
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+
+  app:
+    build: .
+    container_name: app
+    ports:
+      - "5000:5000"
+    environment:
+      MONGO_URI: mongodb://admin:password@mongo:27017/app_db?authSource=admin
+      PORT: 5000
+    depends_on:
+      - mongo
+    restart: unless-stopped
+
+volumes:
+  mongo_data:

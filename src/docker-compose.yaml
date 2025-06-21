@@ -6,6 +6,7 @@ services:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
+      - ./uploads:/app/uploads  
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: password
@@ -16,6 +17,7 @@ services:
     ports:
       - "5000:5000"
     environment:
+      JWT_SECRET: "my_super_secret_key_123!@#"
       MONGO_URI: mongodb://admin:password@mongo:27017/app_db?authSource=admin
       PORT: 5000
     depends_on:

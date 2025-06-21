@@ -19,10 +19,14 @@ exports.register = async (req, res) => {
     const payload = { user: { id: user.id } };
     jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '5d' }, (err, token) => {
       if (err) throw err;
-      res.json({ token });
+      res.status(201).json({ token });
     });
   } catch (err) {
-    res.status(500).send('Ошибка сервера');
+    res.status(500).json({ 
+    message: 'Ошибка сервера',
+    error: err.message,
+    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+  });
   }
 };
 
@@ -42,6 +46,25 @@ exports.login = async (req, res) => {
       res.json({ token });
     });
   } catch (err) {
-    res.status(500).send('Ошибка сервера');
+      res.status(500).json({ 
+    message: 'Ошибка сервера',
+    error: err.message,
+    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+  });
+  }
+};
+
+exports.getUser = async (req, res) => {
+  try {
+    // Пользователь уже добавлен в запрос в auth middleware
+    const user = await User.findById(req.user.id).select('-password');
+    res.json(user);
+  } catch (err) {
+    console.error(err.message);
+      res.status(500).json({ 
+    message: 'Ошибка сервера',
+    error: err.message,
+    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+  });
   }
 };
